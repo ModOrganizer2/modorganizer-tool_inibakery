@@ -7,6 +7,7 @@ FILE(GLOB ${PROJ_NAME}_SRCS *.cpp)
 FILE(GLOB ${PROJ_NAME}_HDRS *.h)
 
 SET(CMAKE_INCLUDE_CURRENT_DIR ON)
+SET(CMAKE_AUTOMOC ON)
 
 SET(default_project_path "${CMAKE_SOURCE_DIR}/..")
 GET_FILENAME_COMPONENT(${default_project_path} ${default_project_path} REALPATH)
