@@ -31,7 +31,7 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301  USA
 /**
  * @brief The IniBakery class
  */
-class IniBakery : public MOBase::IPlugin, public MOBase::IPluginFileMapper {
+class IniBakery : public QObject, public MOBase::IPlugin, public MOBase::IPluginFileMapper {
   Q_OBJECT
   Q_INTERFACES(MOBase::IPlugin MOBase::IPluginFileMapper)
   Q_PLUGIN_METADATA(IID "org.tannin.IniBakey" FILE "inibakery.json")

@@ -3,6 +3,8 @@
 #include <iplugingame.h>
 #include <utility.h>
 #include <QFile>
+#include <QCoreApplication>
+#include <QtPlugin>
 
 
 using namespace MOBase;
@@ -12,7 +14,7 @@ bool IniBakery::init(MOBase::IOrganizer *moInfo)
 {
   m_MOInfo = moInfo;
 
-  m_MOInfo->onAboutToRun([] (const QString&) -> bool {
+  m_MOInfo->onAboutToRun([this] (const QString&) -> bool {
     // bake the ini on start
 
     QString profileIni = profileIniPath();
@@ -21,8 +23,9 @@ bool IniBakery::init(MOBase::IOrganizer *moInfo)
     }
 
     WritePrivateProfileStringW(L"Archive", L"sResourceDataDirsFinal",
-                               L"STRINGS\, INTERFACE\, TEXTURES\, MESHES\",
+                               L"STRINGS\\, INTERFACE\\, TEXTURES\\, MESHES\\",
                                profileIni.toStdWString().c_str());
+    return true;
   });
 
   return true;
@@ -78,7 +81,7 @@ QString IniBakery::profileIniPath() const
 QString IniBakery::gameIniPath() const
 {
   IPluginGame *game = qApp->property("managed_game").value<IPluginGame*>();
-  return game->documentsDirectory().absoluteFilePath(fileName);
+  return game->documentsDirectory().absoluteFilePath(iniFileName());
 }
 
 MappingType IniBakery::mappings() const
