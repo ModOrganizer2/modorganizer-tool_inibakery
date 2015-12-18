@@ -1,10 +1,12 @@
 #include "inibakery.h"
-#include <igameinfo.h>
 #include <iplugingame.h>
+#include <localsavegames.h>
 #include <utility.h>
 #include <QFile>
 #include <QCoreApplication>
+#include <QStringList>
 #include <QtPlugin>
+#include <functional>
 
 
 using namespace MOBase;
@@ -12,21 +14,9 @@ using namespace MOBase;
 
 bool IniBakery::init(MOBase::IOrganizer *moInfo)
 {
+  using namespace std::placeholders;
   m_MOInfo = moInfo;
-
-  m_MOInfo->onAboutToRun([this] (const QString&) -> bool {
-    // bake the ini on start
-
-    QString profileIni = profileIniPath();
-    if (!QFile::exists(profileIni)) {
-      shellCopy(gameIniPath(), profileIni);
-    }
-
-    WritePrivateProfileStringW(L"Archive", L"sResourceDataDirsFinal",
-                               L"STRINGS\\, INTERFACE\\, TEXTURES\\, MESHES\\",
-                               profileIni.toStdWString().c_str());
-    return true;
-  });
+  m_MOInfo->onAboutToRun(std::bind(&IniBakery::prepareIni, this, _1));
 
   return true;
 }
@@ -48,7 +38,7 @@ QString IniBakery::description() const
 
 MOBase::VersionInfo IniBakery::version() const
 {
-  return VersionInfo(0, 0, 1, VersionInfo::RELEASE_ALPHA);
+  return VersionInfo(0, 0, 2, VersionInfo::RELEASE_ALPHA);
 }
 
 bool IniBakery::isActive() const
@@ -61,32 +51,76 @@ QList<PluginSetting> IniBakery::settings() const
   return QList<PluginSetting>();
 }
 
-QString IniBakery::iniFileName() const
+QStringList IniBakery::iniFileNames() const
 {
-  switch (m_MOInfo->gameInfo().type()) {
-    case IGameInfo::TYPE_OBLIVION:  return "oblivion.ini";
-    case IGameInfo::TYPE_FALLOUT3:  return "fallout.ini";
-    case IGameInfo::TYPE_FALLOUT4:  return "fallout4.ini";
-    case IGameInfo::TYPE_FALLOUTNV: return "fallout.ini";
-    case IGameInfo::TYPE_SKYRIM:    return "skyrim.ini";
-    default: throw std::runtime_error("unsupported game");
+  return m_MOInfo->managedGame()->iniFiles();
+}
+
+bool IniBakery::prepareIni(const QString&)
+{
+  const IPluginGame *game = qApp->property("managed_game").value<IPluginGame*>();
+qDebug("%p - %p", qApp, game);
+  game = m_MOInfo->managedGame();
+  // import global ini files if they don't exist in the profile yet
+  for (const QString &iniFile : iniFileNames()) {
+    QString profileIni = m_MOInfo->profilePath() + "/" + iniFile;
+
+    if (!QFile::exists(profileIni)) {
+      shellCopy(game->documentsDirectory().absoluteFilePath(iniFile),
+                profileIni);
+    }
   }
+
+  QString profileIni = m_MOInfo->profilePath() + "/" + iniFileNames()[0];
+
+  WritePrivateProfileStringW(L"Launcher", L"bEnableFileSeletion", L"1",
+                             profileIni.toStdWString().c_str());
+
+  WritePrivateProfileStringW(L"Archive", L"bInvalidateOlderFiles", L"1",
+                             profileIni.toStdWString().c_str());
+qDebug("a");
+  LocalSavegames *savegames = game->feature<LocalSavegames>();
+qDebug("b");
+  if (savegames != nullptr) {
+    savegames->prepareProfile(m_MOInfo->profile());
+  }
+
+  if (m_MOInfo->managedGame()->name() == "Fallout 4") {
+    static std::set<QString> modDirs = { "STRINGS", "TEXTURES", "MUSIC", "SOUND",
+                                         "INTERFACE", "MESHES", "PROGRAMS",
+                                         "MATERIALS", "LODSETTINGS", "VIS", "MISC",
+                                         "SCRIPTS", "SHADERSFX", "VIDEO" };
+
+    QStringList moddedDataDirs;
+    for (const QString &dir : m_MOInfo->listDirectories("")) {
+      QString dirU = dir.toUpper();
+      if (modDirs.find(dirU) != modDirs.end()) {
+        moddedDataDirs.append(dirU + "\\");
+      }
+    }
+
+    WritePrivateProfileStringW(L"Archive", L"sResourceDataDirsFinal",
+                               moddedDataDirs.join(",").toStdWString().c_str(),
+                               profileIni.toStdWString().c_str());
+  }
+  return true;
 }
 
-QString IniBakery::profileIniPath() const
-{
-  return m_MOInfo->profilePath() + "/" + iniFileName();
-}
-
-QString IniBakery::gameIniPath() const
-{
-  IPluginGame *game = qApp->property("managed_game").value<IPluginGame*>();
-  return game->documentsDirectory().absoluteFilePath(iniFileName());
-}
 
 MappingType IniBakery::mappings() const
 {
+  MappingType result;
 
-  return { { profileIniPath(), gameIniPath(), false } };
+  IPluginGame *game = qApp->property("managed_game").value<IPluginGame*>();
+
+  for (const QString &iniFile : iniFileNames()) {
+    result.push_back({ m_MOInfo->profilePath() + "/" + iniFile,
+                       game->documentsDirectory().absoluteFilePath(iniFile),
+                       false,
+                       false
+                     });
+  }
+
+  return result;
 }
 

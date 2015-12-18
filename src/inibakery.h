@@ -49,9 +49,8 @@ public:
 
 private:
 
-  QString iniFileName() const;
-  QString profileIniPath() const;
-  QString gameIniPath() const;
+  QStringList iniFileNames() const;
+  bool prepareIni(const QString &executable);
 
 private:
 
