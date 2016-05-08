@@ -59,7 +59,7 @@ QStringList IniBakery::iniFileNames() const
 bool IniBakery::prepareIni(const QString&)
 {
   const IPluginGame *game = qApp->property("managed_game").value<IPluginGame*>();
-qDebug("%p - %p", qApp, game);
+
   game = m_MOInfo->managedGame();
   // import global ini files if they don't exist in the profile yet
   for (const QString &iniFile : iniFileNames()) {
@@ -71,16 +71,21 @@ qDebug("%p - %p", qApp, game);
     }
   }
 
-  QString profileIni = m_MOInfo->profilePath() + "/" + iniFileNames()[0];
+  IProfile *profile = m_MOInfo->profile();
 
-  WritePrivateProfileStringW(L"Launcher", L"bEnableFileSeletion", L"1",
+  QString basePath
+      = profile->localSettingsEnabled()
+            ? profile->absolutePath()
+            : m_MOInfo->managedGame()->documentsDirectory().absolutePath();
+
+  QString profileIni = basePath + "/" + iniFileNames()[0];
+
+  WritePrivateProfileStringW(L"Launcher", L"bEnableFileSelection", L"1",
                              profileIni.toStdWString().c_str());
 
   WritePrivateProfileStringW(L"Archive", L"bInvalidateOlderFiles", L"1",
                              profileIni.toStdWString().c_str());
-qDebug("a");
   LocalSavegames *savegames = game->feature<LocalSavegames>();
-qDebug("b");
   if (savegames != nullptr) {
     savegames->prepareProfile(m_MOInfo->profile());
   }
@@ -111,16 +116,17 @@ MappingType IniBakery::mappings() const
 {
   MappingType result;
 
-  IPluginGame *game = qApp->property("managed_game").value<IPluginGame*>();
+  IPluginGame *game = qApp->property("managed_game").value<IPluginGame *>();
 
-  for (const QString &iniFile : iniFileNames()) {
-    result.push_back({ m_MOInfo->profilePath() + "/" + iniFile,
-                       game->documentsDirectory().absoluteFilePath(iniFile),
-                       false,
-                       false
-                     });
+  IProfile *profile = m_MOInfo->profile();
+
+  if (profile->localSettingsEnabled()) {
+    for (const QString &iniFile : iniFileNames()) {
+      result.push_back({m_MOInfo->profilePath() + "/" + iniFile,
+                        game->documentsDirectory().absoluteFilePath(iniFile),
+                        false, false});
+    }
   }
 
   return result;
 }
-
