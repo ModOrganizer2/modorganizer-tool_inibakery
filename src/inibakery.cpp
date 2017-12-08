@@ -61,15 +61,6 @@ bool IniBakery::prepareIni(const QString&)
   const IPluginGame *game = qApp->property("managed_game").value<IPluginGame*>();
 
   game = m_MOInfo->managedGame();
-  // import global ini files if they don't exist in the profile yet
-  for (const QString &iniFile : iniFileNames()) {
-    QString profileIni = m_MOInfo->profilePath() + "/" + iniFile;
-
-    if (!QFile::exists(profileIni)) {
-      shellCopy(game->documentsDirectory().absoluteFilePath(iniFile),
-                profileIni);
-    }
-  }
 
   IProfile *profile = m_MOInfo->profile();
 
