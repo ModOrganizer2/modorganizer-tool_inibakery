@@ -71,11 +71,17 @@ bool IniBakery::prepareIni(const QString&)
 
   QString profileIni = basePath + "/" + iniFileNames()[0];
 
-  WritePrivateProfileStringW(L"Launcher", L"bEnableFileSelection", L"1",
-                             profileIni.toStdWString().c_str());
+  WCHAR setting[512];
+  if (!GetPrivateProfileStringW(L"Launcher", L"bEnableFileSelection", L"0", setting, 512, profileIni.toStdWString().c_str())
+    || wcstol(setting, nullptr, 10) != 1) {
+    WritePrivateProfileStringW(L"Launcher", L"bEnableFileSelection", L"1", profileIni.toStdWString().c_str());
+  }
 
-  WritePrivateProfileStringW(L"Archive", L"bInvalidateOlderFiles", L"1",
-                             profileIni.toStdWString().c_str());
+  if (!GetPrivateProfileStringW(L"Archive", L"bInvalidateOlderFiles", L"0", setting, 512, profileIni.toStdWString().c_str())
+    || wcstol(setting, nullptr, 10) != 1) {
+    WritePrivateProfileStringW(L"Archive", L"bInvalidateOlderFiles", L"1", profileIni.toStdWString().c_str());
+  }
+
   LocalSavegames *savegames = game->feature<LocalSavegames>();
   if (savegames != nullptr) {
     savegames->prepareProfile(m_MOInfo->profile());
