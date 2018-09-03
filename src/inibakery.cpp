@@ -87,24 +87,6 @@ bool IniBakery::prepareIni(const QString&)
     savegames->prepareProfile(m_MOInfo->profile());
   }
 
-  if (m_MOInfo->managedGame()->name() == "Fallout 4") {
-    static std::set<QString> modDirs = { "STRINGS", "TEXTURES", "MUSIC", "SOUND",
-                                         "INTERFACE", "MESHES", "PROGRAMS",
-                                         "MATERIALS", "LODSETTINGS", "VIS", "MISC",
-                                         "SCRIPTS", "SHADERSFX", "VIDEO" };
-
-    QStringList moddedDataDirs;
-    for (const QString &dir : m_MOInfo->listDirectories("")) {
-      QString dirU = dir.toUpper();
-      if (modDirs.find(dirU) != modDirs.end()) {
-        moddedDataDirs.append(dirU + "\\");
-      }
-    }
-
-    WritePrivateProfileStringW(L"Archive", L"sResourceDataDirsFinal",
-                               moddedDataDirs.join(",").toStdWString().c_str(),
-                               profileIni.toStdWString().c_str());
-  }
   return true;
 }
 
