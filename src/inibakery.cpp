@@ -38,7 +38,7 @@ QString IniBakery::description() const
 
 MOBase::VersionInfo IniBakery::version() const
 {
-  return VersionInfo(0, 0, 2, VersionInfo::RELEASE_ALPHA);
+  return VersionInfo(0, 1, 0, VersionInfo::RELEASE_FINAL);
 }
 
 bool IniBakery::isActive() const
