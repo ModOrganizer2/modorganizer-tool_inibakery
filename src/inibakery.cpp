@@ -23,7 +23,7 @@ bool IniBakery::init(MOBase::IOrganizer *moInfo)
 
 QString IniBakery::name() const
 {
-  return "Ini Bakery";
+  return "INI Bakery";
 }
 
 QString IniBakery::author() const
