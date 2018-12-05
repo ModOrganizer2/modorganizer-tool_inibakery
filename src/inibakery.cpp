@@ -1,6 +1,7 @@
 #include "inibakery.h"
 #include <iplugingame.h>
 #include <localsavegames.h>
+#include <bsainvalidation.h>
 #include <utility.h>
 #include <QFile>
 #include <QCoreApplication>
@@ -38,7 +39,7 @@ QString IniBakery::description() const
 
 MOBase::VersionInfo IniBakery::version() const
 {
-  return VersionInfo(0, 1, 0, VersionInfo::RELEASE_FINAL);
+  return VersionInfo(0, 2, 0, VersionInfo::RELEASE_FINAL);
 }
 
 bool IniBakery::isActive() const
@@ -77,14 +78,14 @@ bool IniBakery::prepareIni(const QString&)
     WritePrivateProfileStringW(L"Launcher", L"bEnableFileSelection", L"1", profileIni.toStdWString().c_str());
   }
 
-  if (!GetPrivateProfileStringW(L"Archive", L"bInvalidateOlderFiles", L"0", setting, 512, profileIni.toStdWString().c_str())
-    || wcstol(setting, nullptr, 10) != 1) {
-    WritePrivateProfileStringW(L"Archive", L"bInvalidateOlderFiles", L"1", profileIni.toStdWString().c_str());
-  }
-
   LocalSavegames *savegames = game->feature<LocalSavegames>();
   if (savegames != nullptr) {
     savegames->prepareProfile(m_MOInfo->profile());
+  }
+
+  BSAInvalidation *invalidation = game->feature<BSAInvalidation>();
+  if (invalidation != nullptr) {
+    invalidation->prepareProfile(m_MOInfo->profile());
   }
 
   return true;
