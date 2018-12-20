@@ -1,6 +1,7 @@
 #include "inibakery.h"
 #include <iplugingame.h>
 #include <localsavegames.h>
+#include <bsainvalidation.h>
 #include <utility.h>
 #include <QFile>
 #include <QCoreApplication>
@@ -23,7 +24,7 @@ bool IniBakery::init(MOBase::IOrganizer *moInfo)
 
 QString IniBakery::name() const
 {
-  return "Ini Bakery";
+  return "INI Bakery";
 }
 
 QString IniBakery::author() const
@@ -38,7 +39,7 @@ QString IniBakery::description() const
 
 MOBase::VersionInfo IniBakery::version() const
 {
-  return VersionInfo(0, 0, 2, VersionInfo::RELEASE_ALPHA);
+  return VersionInfo(0, 2, 0, VersionInfo::RELEASE_FINAL);
 }
 
 bool IniBakery::isActive() const
@@ -71,34 +72,22 @@ bool IniBakery::prepareIni(const QString&)
 
   QString profileIni = basePath + "/" + iniFileNames()[0];
 
-  WritePrivateProfileStringW(L"Launcher", L"bEnableFileSelection", L"1",
-                             profileIni.toStdWString().c_str());
+  WCHAR setting[512];
+  if (!GetPrivateProfileStringW(L"Launcher", L"bEnableFileSelection", L"0", setting, 512, profileIni.toStdWString().c_str())
+    || wcstol(setting, nullptr, 10) != 1) {
+    WritePrivateProfileStringW(L"Launcher", L"bEnableFileSelection", L"1", profileIni.toStdWString().c_str());
+  }
 
-  WritePrivateProfileStringW(L"Archive", L"bInvalidateOlderFiles", L"1",
-                             profileIni.toStdWString().c_str());
   LocalSavegames *savegames = game->feature<LocalSavegames>();
   if (savegames != nullptr) {
     savegames->prepareProfile(m_MOInfo->profile());
   }
 
-  if (m_MOInfo->managedGame()->name() == "Fallout 4") {
-    static std::set<QString> modDirs = { "STRINGS", "TEXTURES", "MUSIC", "SOUND",
-                                         "INTERFACE", "MESHES", "PROGRAMS",
-                                         "MATERIALS", "LODSETTINGS", "VIS", "MISC",
-                                         "SCRIPTS", "SHADERSFX", "VIDEO" };
-
-    QStringList moddedDataDirs;
-    for (const QString &dir : m_MOInfo->listDirectories("")) {
-      QString dirU = dir.toUpper();
-      if (modDirs.find(dirU) != modDirs.end()) {
-        moddedDataDirs.append(dirU + "\\");
-      }
-    }
-
-    WritePrivateProfileStringW(L"Archive", L"sResourceDataDirsFinal",
-                               moddedDataDirs.join(",").toStdWString().c_str(),
-                               profileIni.toStdWString().c_str());
+  BSAInvalidation *invalidation = game->feature<BSAInvalidation>();
+  if (invalidation != nullptr) {
+    invalidation->prepareProfile(m_MOInfo->profile());
   }
+
   return true;
 }
 
