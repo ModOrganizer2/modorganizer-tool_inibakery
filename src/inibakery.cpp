@@ -3,6 +3,7 @@
 #include <localsavegames.h>
 #include <bsainvalidation.h>
 #include <utility.h>
+#include "registry.h"
 #include <QFile>
 #include <QCoreApplication>
 #include <QStringList>
@@ -75,7 +76,7 @@ bool IniBakery::prepareIni(const QString&)
   WCHAR setting[512];
   if (!GetPrivateProfileStringW(L"Launcher", L"bEnableFileSelection", L"0", setting, 512, profileIni.toStdWString().c_str())
     || wcstol(setting, nullptr, 10) != 1) {
-    WritePrivateProfileStringW(L"Launcher", L"bEnableFileSelection", L"1", profileIni.toStdWString().c_str());
+    MOBase::WriteRegistryValue(L"Launcher", L"bEnableFileSelection", L"1", profileIni.toStdWString().c_str());
   }
 
   LocalSavegames *savegames = game->feature<LocalSavegames>();
