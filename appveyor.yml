@@ -14,11 +14,11 @@ build_script:
 
     C:\Python37-x64\python.exe unimake.py -d c:\projects\modorganizer-build -s Appveyor_Build=True %APPVEYOR_PROJECT_NAME%
 artifacts:
-- path: vsbuild\src\RelWithDebInfo\inibakery.dll
+- path: ..\..\..\install\bin\plugins\inibakery.dll
   name: inibakery_dll
-- path: vsbuild\src\RelWithDebInfo\inibakery.pdb
+- path: ..\..\..\install\pdb\inibakery.pdb
   name: inibakery_pdb
-- path: vsbuild\src\RelWithDebInfo\inibakery.lib
+- path: ..\..\..\install\libs\inibakery.lib
   name: inibakery_lib
 on_success:
   - ps: Set-Location -Path $env:APPVEYOR_BUILD_FOLDER
