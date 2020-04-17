@@ -71,12 +71,15 @@ bool IniBakery::prepareIni(const QString&)
             ? profile->absolutePath()
             : m_MOInfo->managedGame()->documentsDirectory().absolutePath();
 
-  QString profileIni = basePath + "/" + iniFileNames()[0];
+  if (!iniFileNames().isEmpty()) {
 
-  WCHAR setting[512];
-  if (!GetPrivateProfileStringW(L"Launcher", L"bEnableFileSelection", L"0", setting, 512, profileIni.toStdWString().c_str())
-    || wcstol(setting, nullptr, 10) != 1) {
-    MOBase::WriteRegistryValue(L"Launcher", L"bEnableFileSelection", L"1", profileIni.toStdWString().c_str());
+    QString profileIni = basePath + "/" + iniFileNames()[0];
+
+    WCHAR setting[512];
+    if (!GetPrivateProfileStringW(L"Launcher", L"bEnableFileSelection", L"0", setting, 512, profileIni.toStdWString().c_str())
+      || wcstol(setting, nullptr, 10) != 1) {
+      MOBase::WriteRegistryValue(L"Launcher", L"bEnableFileSelection", L"1", profileIni.toStdWString().c_str());
+    }
   }
 
   LocalSavegames *savegames = game->feature<LocalSavegames>();
