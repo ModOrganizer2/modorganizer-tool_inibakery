@@ -106,7 +106,7 @@ MappingType IniBakery::mappings() const
 
   if (profile->localSettingsEnabled()) {
     for (const QString &iniFile : iniFileNames()) {
-      result.push_back({m_MOInfo->profilePath() + "/" + iniFile,
+      result.push_back({m_MOInfo->profilePath() + "/" + QFileInfo(iniFile).fileName(),
                         game->documentsDirectory().absoluteFilePath(iniFile),
                         false, false});
     }
