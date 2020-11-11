@@ -28,6 +28,11 @@ QString IniBakery::name() const
   return "INI Bakery";
 }
 
+QString IniBakery::localizedName() const
+{
+  return tr("INI Bakery");
+}
+
 QString IniBakery::author() const
 {
   return "Tannin";
@@ -41,11 +46,6 @@ QString IniBakery::description() const
 MOBase::VersionInfo IniBakery::version() const
 {
   return VersionInfo(0, 2, 0, VersionInfo::RELEASE_FINAL);
-}
-
-bool IniBakery::isActive() const
-{
-  return true;
 }
 
 QList<PluginSetting> IniBakery::settings() const
