@@ -2,8 +2,6 @@
 #include <iplugingame.h>
 #include <localsavegames.h>
 #include <bsainvalidation.h>
-#include <utility.h>
-#include "registry.h"
 #include <QFile>
 #include <QCoreApplication>
 #include <QStringList>
@@ -45,7 +43,7 @@ QString IniBakery::description() const
 
 MOBase::VersionInfo IniBakery::version() const
 {
-  return VersionInfo(0, 2, 0, VersionInfo::RELEASE_FINAL);
+  return VersionInfo(0, 3, 0, VersionInfo::RELEASE_FINAL);
 }
 
 QList<PluginSetting> IniBakery::settings() const
@@ -60,27 +58,7 @@ QStringList IniBakery::iniFileNames() const
 
 bool IniBakery::prepareIni(const QString&)
 {
-  const IPluginGame *game = qApp->property("managed_game").value<IPluginGame*>();
-
-  game = m_MOInfo->managedGame();
-
-  IProfile *profile = m_MOInfo->profile();
-
-  QString basePath
-      = profile->localSettingsEnabled()
-            ? profile->absolutePath()
-            : m_MOInfo->managedGame()->documentsDirectory().absolutePath();
-
-  if (!iniFileNames().isEmpty()) {
-
-    QString profileIni = basePath + "/" + iniFileNames()[0];
-
-    WCHAR setting[512];
-    if (!GetPrivateProfileStringW(L"Launcher", L"bEnableFileSelection", L"0", setting, 512, profileIni.toStdWString().c_str())
-      || wcstol(setting, nullptr, 10) != 1) {
-      MOBase::WriteRegistryValue(L"Launcher", L"bEnableFileSelection", L"1", profileIni.toStdWString().c_str());
-    }
-  }
+  const IPluginGame *game = m_MOInfo->managedGame();
 
   LocalSavegames *savegames = game->feature<LocalSavegames>();
   if (savegames != nullptr) {
@@ -100,7 +78,7 @@ MappingType IniBakery::mappings() const
 {
   MappingType result;
 
-  IPluginGame *game = qApp->property("managed_game").value<IPluginGame *>();
+  const IPluginGame *game = m_MOInfo->managedGame();
 
   IProfile *profile = m_MOInfo->profile();
 
