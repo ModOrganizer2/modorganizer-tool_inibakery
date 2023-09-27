@@ -16,7 +16,7 @@ bool IniBakery::init(MOBase::IOrganizer *moInfo)
 {
   using namespace std::placeholders;
   m_MOInfo = moInfo;
-  m_MOInfo->onAboutToRun(std::bind(&IniBakery::prepareIni, this, _1));
+  m_MOInfo->onAboutToRun([this](const auto& binary) { return prepareIni(binary); });
 
   return true;
 }
