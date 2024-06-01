@@ -4,12 +4,12 @@
 <context>
     <name>IniBakery</name>
     <message>
-        <location filename="inibakery.cpp" line="31"/>
+        <location filename="inibakery.cpp" line="32"/>
         <source>INI Bakery</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="inibakery.cpp" line="41"/>
+        <location filename="inibakery.cpp" line="42"/>
         <source>Manages game ini files</source>
         <translation type="unfinished"></translation>
     </message>
