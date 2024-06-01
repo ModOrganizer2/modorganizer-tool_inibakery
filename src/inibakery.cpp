@@ -61,12 +61,12 @@ bool IniBakery::prepareIni(const QString&)
 {
   const auto* features = m_MOInfo->gameFeatures();
 
-  auto* savegames = features->gameFeature<MOBase::LocalSavegames>();
+  auto savegames = features->gameFeature<MOBase::LocalSavegames>();
   if (savegames != nullptr) {
     savegames->prepareProfile(m_MOInfo->profile());
   }
 
-  auto* invalidation = features->gameFeature<BSAInvalidation>();
+  auto invalidation = features->gameFeature<BSAInvalidation>();
   if (invalidation != nullptr) {
     invalidation->prepareProfile(m_MOInfo->profile());
   }
