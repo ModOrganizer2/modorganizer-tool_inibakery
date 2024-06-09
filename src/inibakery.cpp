@@ -2,6 +2,7 @@
 #include <iplugingame.h>
 #include <localsavegames.h>
 #include <bsainvalidation.h>
+#include <igamefeatures.h>
 #include <QFile>
 #include <QCoreApplication>
 #include <QStringList>
@@ -58,14 +59,14 @@ QStringList IniBakery::iniFileNames() const
 
 bool IniBakery::prepareIni(const QString&)
 {
-  const IPluginGame *game = m_MOInfo->managedGame();
+  const auto* features = m_MOInfo->gameFeatures();
 
-  LocalSavegames *savegames = game->feature<LocalSavegames>();
+  auto savegames = features->gameFeature<MOBase::LocalSavegames>();
   if (savegames != nullptr) {
     savegames->prepareProfile(m_MOInfo->profile());
   }
 
-  BSAInvalidation *invalidation = game->feature<BSAInvalidation>();
+  auto invalidation = features->gameFeature<BSAInvalidation>();
   if (invalidation != nullptr) {
     invalidation->prepareProfile(m_MOInfo->profile());
   }
