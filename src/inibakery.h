@@ -20,9 +20,9 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301  USA
 
 #pragma once
 
-#include <QString>
-#include <QObject>
 #include <QList>
+#include <QObject>
+#include <QString>
 
 #include <uibase/iplugin.h>
 #include <uibase/ipluginfilemapper.h>
@@ -30,13 +30,16 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301  USA
 /**
  * @brief The IniBakery class
  */
-class IniBakery : public QObject, public MOBase::IPlugin, public MOBase::IPluginFileMapper {
+class IniBakery : public QObject,
+                  public MOBase::IPlugin,
+                  public MOBase::IPluginFileMapper
+{
   Q_OBJECT
   Q_INTERFACES(MOBase::IPlugin MOBase::IPluginFileMapper)
   Q_PLUGIN_METADATA(IID "org.tannin.IniBakey")
 
 public:
-  virtual bool init(MOBase::IOrganizer *moInfo);
+  virtual bool init(MOBase::IOrganizer* moInfo);
   virtual QString name() const;
   virtual QString localizedName() const;
   virtual QString author() const;
@@ -47,13 +50,9 @@ public:
   virtual MappingType mappings() const;
 
 private:
-
   QStringList iniFileNames() const;
-  bool prepareIni(const QString &executable);
+  bool prepareIni(const QString& executable);
 
 private:
-
-  MOBase::IOrganizer *m_MOInfo;
-
+  MOBase::IOrganizer* m_MOInfo;
 };
-
