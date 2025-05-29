@@ -2,25 +2,25 @@
 
 #include <functional>
 
-#include <QFile>
 #include <QCoreApplication>
+#include <QFile>
 #include <QStringList>
 #include <QtPlugin>
 
-#include <uibase/iplugingame.h>
-#include <uibase/game_features/localsavegames.h>
 #include <uibase/game_features/bsainvalidation.h>
 #include <uibase/game_features/igamefeatures.h>
-
+#include <uibase/game_features/localsavegames.h>
+#include <uibase/iplugingame.h>
 
 using namespace MOBase;
 
-
-bool IniBakery::init(MOBase::IOrganizer *moInfo)
+bool IniBakery::init(MOBase::IOrganizer* moInfo)
 {
   using namespace std::placeholders;
   m_MOInfo = moInfo;
-  m_MOInfo->onAboutToRun([this](const auto& binary) { return prepareIni(binary); });
+  m_MOInfo->onAboutToRun([this](const auto& binary) {
+    return prepareIni(binary);
+  });
 
   return true;
 }
@@ -77,20 +77,19 @@ bool IniBakery::prepareIni(const QString&)
   return true;
 }
 
-
 MappingType IniBakery::mappings() const
 {
   MappingType result;
 
-  const IPluginGame *game = m_MOInfo->managedGame();
+  const IPluginGame* game = m_MOInfo->managedGame();
 
-  IProfile *profile = m_MOInfo->profile();
+  IProfile* profile = m_MOInfo->profile();
 
   if (profile->localSettingsEnabled()) {
-    for (const QString &iniFile : iniFileNames()) {
+    for (const QString& iniFile : iniFileNames()) {
       result.push_back({m_MOInfo->profilePath() + "/" + QFileInfo(iniFile).fileName(),
-                        game->documentsDirectory().absoluteFilePath(iniFile),
-                        false, false});
+                        game->documentsDirectory().absoluteFilePath(iniFile), false,
+                        false});
     }
   }
 
