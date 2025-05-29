@@ -1,13 +1,16 @@
 #include "inibakery.h"
-#include <iplugingame.h>
-#include <localsavegames.h>
-#include <bsainvalidation.h>
-#include <igamefeatures.h>
+
+#include <functional>
+
 #include <QFile>
 #include <QCoreApplication>
 #include <QStringList>
 #include <QtPlugin>
-#include <functional>
+
+#include <uibase/iplugingame.h>
+#include <uibase/game_features/localsavegames.h>
+#include <uibase/game_features/bsainvalidation.h>
+#include <uibase/game_features/igamefeatures.h>
 
 
 using namespace MOBase;

@@ -20,13 +20,12 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301  USA
 
 #pragma once
 
-
-#include <iplugin.h>
-#include <ipluginfilemapper.h>
 #include <QString>
 #include <QObject>
 #include <QList>
 
+#include <uibase/iplugin.h>
+#include <uibase/ipluginfilemapper.h>
 
 /**
  * @brief The IniBakery class
@@ -34,7 +33,7 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301  USA
 class IniBakery : public QObject, public MOBase::IPlugin, public MOBase::IPluginFileMapper {
   Q_OBJECT
   Q_INTERFACES(MOBase::IPlugin MOBase::IPluginFileMapper)
-  Q_PLUGIN_METADATA(IID "org.tannin.IniBakey" FILE "inibakery.json")
+  Q_PLUGIN_METADATA(IID "org.tannin.IniBakey")
 
 public:
   virtual bool init(MOBase::IOrganizer *moInfo);
