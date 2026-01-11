@@ -66,12 +66,12 @@ bool IniBakery::prepareIni(const QString&)
 
   auto savegames = features->gameFeature<MOBase::LocalSavegames>();
   if (savegames != nullptr) {
-    savegames->prepareProfile(m_MOInfo->profile());
+    savegames->prepareProfile(m_MOInfo->profile().get());
   }
 
   auto invalidation = features->gameFeature<BSAInvalidation>();
   if (invalidation != nullptr) {
-    invalidation->prepareProfile(m_MOInfo->profile());
+    invalidation->prepareProfile(m_MOInfo->profile().get());
   }
 
   return true;
@@ -83,7 +83,7 @@ MappingType IniBakery::mappings() const
 
   const IPluginGame* game = m_MOInfo->managedGame();
 
-  IProfile* profile = m_MOInfo->profile();
+  auto profile = m_MOInfo->profile();
 
   if (profile->localSettingsEnabled()) {
     for (const QString& iniFile : iniFileNames()) {
